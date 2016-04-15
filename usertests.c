@@ -113,6 +113,13 @@ openiputtest(void)
   printf(stdout, "openiput test ok\n");
 }
 
+void
+pcount(void)
+{
+  int x;
+  x = count();
+}
+
 // simple file system tests
 
 void
@@ -1706,7 +1713,7 @@ rand()
 int
 main(int argc, char *argv[])
 {
-  printf(1, "usertests starting\n");
+  /*printf(1, "usertests starting\n");
 
   if(open("usertests.ran", 0) >= 0){
     printf(1, "already ran user tests -- rebuild fs.img\n");
@@ -1751,7 +1758,7 @@ main(int argc, char *argv[])
   iref();
   forktest();
   bigdir(); // slow
-  exectest();
-
+  exectest();*/
+  pcount();
   exit();
 }

@@ -6,6 +6,8 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "stdio.h"
+
 
 int
 sys_fork(void)
@@ -88,4 +90,11 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int
+sys_count(void)
+{
+  cprintf("number of system calls: %d\n", sys_ncount());
+  return sys_ncount();
 }
