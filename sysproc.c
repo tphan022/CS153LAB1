@@ -25,7 +25,10 @@ sys_exit(void)
 int
 sys_wait(void)
 {
-  return wait();
+  char* value = 0;
+  argptr(0, &value, 4);
+  int* status = (int*)value;
+  return wait(status);
 }
 
 int
