@@ -26,10 +26,29 @@ int
 sys_wait(void)
 {
   char* value = 0;
+
   argptr(0, &value, 4);
+
   int* status = (int*)value;
+
   return wait(status);
 }
+
+int
+sys_waitpid(void)
+{
+  int PID = 0;
+  char* value;
+  int options = 0;
+  if( argint(0, &PID) < 0 || argptr(1, &value, 4) < 0 || argint(2, &options) < 0) {
+    return -1;
+  }
+
+  int* status = (int*)value;
+
+  return waitpid(PID, status, options);
+
+} 
 
 int
 sys_kill(void)
