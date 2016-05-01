@@ -155,14 +155,11 @@ fork(void)
   np->cwd = idup(proc->cwd);
 
   safestrcpy(np->name, proc->name, sizeof(proc->name));
- 
-  pid = np->pid;
-
-  // lock to force the compiler to emit the np->state write last.
-  acquire(&ptable.lock);
+ acquire(&ptable.lock);
   np->state = RUNNABLE;
   release(&ptable.lock);
-  
+  pid = np->pid;
+  np->priority = 0; //When fork, initializes priority to zero.
   return pid;
 }
 
@@ -317,8 +314,9 @@ void
 scheduler(void)
 {
   struct proc *p;
-
+  int priority_scheduler;
   for(;;){
+    priority_scheduler = 0;
     // Enable interrupts on this processor.
     sti();
 
@@ -327,18 +325,21 @@ scheduler(void)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
+      if(priority_scheduler <= p->priority) {
+	priority_scheduler = p->priority;
+      }
+    }
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+      if(priority_scheduler == p->priority) {
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      swtch(&cpu->scheduler, proc->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
+        proc = p;
+        switchuvm(p);
+        p->state = RUNNING;
+        swtch(&cpu->scheduler, proc->context);
+        switchkvm();
+      }
       proc = 0;
     }
     release(&ptable.lock);

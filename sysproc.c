@@ -120,3 +120,16 @@ sys_count(void)
   cprintf("number of system calls: %d\n", sys_ncount());
   return sys_ncount();
 }
+
+int
+sys_change_priority(void)
+{
+  int this_priority;
+
+  if(argint(0, &this_priority) < 0) {
+    return -1;
+  }
+  proc->priority = this_priority;
+
+  return 0;
+}
